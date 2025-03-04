@@ -56,7 +56,7 @@ def setup_chat_model(args):
         "top_p": args.top_p,
         "streaming": args.stream,
     }
-    if args.llm_engine == "vllm" or args.llm_engine == "tgi":
+    if args.llm_engine == "vllm" or args.llm_engine == "tgi" or args.llm_engine == "ollama":
         openai_endpoint = f"{args.llm_endpoint_url}/v1"
         llm = ChatOpenAI(
             openai_api_key="EMPTY",

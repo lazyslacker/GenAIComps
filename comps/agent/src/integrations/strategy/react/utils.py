@@ -13,6 +13,7 @@ from langchain_core.output_parsers import BaseOutputParser
 from pydantic import BaseModel
 
 
+
 class ReActLlamaOutputParser(BaseOutputParser):
     def parse(self, text: str):
         print("raw output from llm: ", text)
@@ -20,18 +21,26 @@ class ReActLlamaOutputParser(BaseOutputParser):
         output = []
         for line in json_lines:
             try:
-                if "TOOL CALL:" in line:
+                if "**Tool Call:** TOOL CALL:" in line:
+                    line = line.replace("**Tool Call:** TOOL CALL:", "")
+                if "**Tool Call:**" in line:
+                    line = line.replace("**Tool Call:**", "")
+                if "TOOL CALL: " in line:
                     line = line.replace("TOOL CALL:", "")
                 if "FINAL ANSWER:" in line:
                     line = line.replace("FINAL ANSWER:", "")
                 if "assistant" in line:
                     line = line.replace("assistant", "")
-                parsed_line = json.loads(line)
+                try:
+                    parsed_line = json.loads(line)
+                except:
+                    continue
+                print("parsed_line: ", parsed_line)
                 if isinstance(parsed_line, dict):
                     print("parsed line: ", parsed_line)
                     output.append(parsed_line)
             except Exception as e:
-                print("Exception happened in output parsing: ", str(e))
+                print("Exception happened in output parsing: ", line, str(e))
         if output:
             return output
         else:
